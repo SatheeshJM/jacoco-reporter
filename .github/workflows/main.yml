@@ -10,12 +10,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: JaCoCo Code Coverage Report
-        id: jacoco_reporter
-        uses: PavanMudigonda/jacoco-action@v1.2
-        with:
-          coverage_results_path: ./jacoco-report/test.xml
-          coverage_report_name: Code Coverage Report
-          coverage_report_title: JaCoCo
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_check_run: false
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Publish test coverage results
+      uses: PavanMudigonda/jacoco-reporter@v4.5
+      with:
+        coverage_results_path: 'jacoco.xml'
+        coverage_report_title: 'Test coverage results'
+        coverage_report_name: 'Test coverage results'
+        github_token: ${{ secrets.GITHUB_TOKEN }}      
