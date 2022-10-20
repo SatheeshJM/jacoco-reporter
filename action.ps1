@@ -43,6 +43,7 @@ $script:publish_only_summary = $inputs.publish_only_summary
 $script:skip_check_run = $inputs.skip_check_run
 
 
+$coverageXmlData = Select-Xml -Path $coverage_results_path -XPath "/report/counter[@type='LINE']"
 $coveredLines = [int]$coverageXmlData.Node.covered
 $missedLines = [int]$coverageXmlData.Node.missed
 $totalLines = [int]($coveredLines+$missedLines)
@@ -242,7 +243,7 @@ else {
         Set-ActionOutput -Name coverageSummary -Value $coverageSummary
 
     }
-$coverageXmlData = Select-Xml -Path $coverage_results_path -XPath "/report/counter[@type='LINE']"
+
 Write-Host "Covered Lines: $coveredLines"
 Write-Host "Missed Lines: $missedLines"
 Write-Host "Total Lines: $totalLines"
