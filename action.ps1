@@ -43,6 +43,7 @@ $script:publish_only_summary = $inputs.publish_only_summary
 $script:skip_check_run = $inputs.skip_check_run
 
 
+$coverage_results_path = $inputs.coverage_results_path
 $coverageXmlData = Select-Xml -Path $coverage_results_path -XPath "/report/counter[@type='LINE']"
 $coveredLines = [int]$coverageXmlData.Node.covered
 $missedLines = [int]$coverageXmlData.Node.missed
@@ -198,7 +199,6 @@ function Publish-ToCheckRun {
 
 
 Write-ActionInfo "Publishing Report to GH Workflow"
-$coverage_results_path = $inputs.coverage_results_path
 if ($inputs.skip_check_run -ne $true -and $inputs.publish_only_summary -eq $true )
     {
         Build-CoverageSummaryReport
