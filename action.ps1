@@ -42,6 +42,36 @@ $script:coverage_summary_path = Join-Path $test_results_dir coverage-summary.md
 $script:publish_only_summary = $inputs.publish_only_summary
 $script:skip_check_run = $inputs.skip_check_run
 
+
+$coveredLines = [int]$coverageXmlData.Node.covered
+$missedLines = [int]$coverageXmlData.Node.missed
+$totalLines = [int]($coveredLines+$missedLines)
+if ($missedLines -eq 0)
+    {
+    $coveragePercentage = 100
+    Write-Output "Coverage: $coveragePercentage"
+    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage/100)
+    }
+elseif ($coveredLines -eq 0)
+    {
+    $coveragePercentage = 0
+    Write-Output "Coverage: $coveragePercentage"
+    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage)
+    }
+elseif ($coveredLines -eq 0 -and $missedLines -eq 0)
+    {
+    $coveragePercentage = 0
+    Write-Output "Coverage: $coveragePercentage"
+    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage)
+    }
+else
+    {
+    $coveragePercentage = [math]::Round( (($coveredLines/($coveredLines+$missedLines) ) * 100 ), 2)
+    Write-Output "Coverage: $coveragePercentage"
+    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage/100)
+    }
+    
+
 # Feature 1
 function Build-CoverageReport
 {
@@ -54,7 +84,7 @@ function Build-CoverageReport
         $script:coverage_report_name = "COVERAGE_RESULTS_$([datetime]::Now.ToString('yyyyMMdd_hhmmss'))"
     }
     if (-not $coverage_report_title) {
-        $script:coverage_report_title = $report_name
+        $script:coverage_report_title = "$coveragePercentageString ($coveredLines/$totalLines lines)"
     }
 
         $script:coverage_report_path = Join-Path $test_results_dir coverage-results.md
@@ -80,7 +110,7 @@ function Build-CoverageSummaryReport
         $script:coverage_report_name = "COVERAGE_RESULTS_$([datetime]::Now.ToString('yyyyMMdd_hhmmss'))"
     }
     if (-not $coverage_report_title) {
-        $script:coverage_report_title = $report_name
+        $script:coverage_report_title =  "$coveragePercentageString ($coveredLines/$totalLines lines)"
     }
 
     $script:coverage_report_path = Join-Path $test_results_dir coverage-results.md
@@ -103,7 +133,7 @@ function Build-SummaryReport
         $script:coverage_report_name = "COVERAGE_RESULTS_$([datetime]::Now.ToString('yyyyMMdd_hhmmss'))"
     }
     if (-not $coverage_report_title) {
-        $script:coverage_report_title = $report_name
+        $script:coverage_report_title =  "$coveragePercentageString ($coveredLines/$totalLines lines)"
     }
 
     $script:coverage_summary_path = Join-Path $test_results_dir coverage-summary.md
@@ -213,36 +243,10 @@ else {
 
     }
 $coverageXmlData = Select-Xml -Path $coverage_results_path -XPath "/report/counter[@type='LINE']"
-$coveredLines = [int]$coverageXmlData.Node.covered
 Write-Host "Covered Lines: $coveredLines"
-$missedLines = [int]$coverageXmlData.Node.missed
-$totalLines = [int]($coveredLines+$missedLines)
 Write-Host "Missed Lines: $missedLines"
 Write-Host "Total Lines: $totalLines"
-if ($missedLines -eq 0)
-    {
-    $coveragePercentage = 100
-    Write-Output "Coverage: $coveragePercentage"
-    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage/100)
-    }
-elseif ($coveredLines -eq 0)
-    {
-    $coveragePercentage = 0
-    Write-Output "Coverage: $coveragePercentage"
-    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage)
-    }
-elseif ($coveredLines -eq 0 -and $missedLines -eq 0)
-    {
-    $coveragePercentage = 0
-    Write-Output "Coverage: $coveragePercentage"
-    $coveragePercentageString = "{0:p2}" -f ($coveragePercentage)
-    }
-else
-    {
-        $coveragePercentage = [math]::Round( (($coveredLines/($coveredLines+$missedLines) ) * 100 ), 2)
-        Write-Output "Coverage: $coveragePercentage"
-        $coveragePercentageString = "{0:p2}" -f ($coveragePercentage/100)
-    }
+
 
 Set-ActionOutput -Name coveragePercentageString -Value ($coveragePercentageString)
 Set-ActionOutput -Name coveragePercentage -Value ($coveragePercentage)
