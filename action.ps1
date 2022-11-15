@@ -207,7 +207,7 @@ if ($inputs.skip_check_run -ne $true -and $inputs.publish_only_summary -eq $true
 
         Publish-ToCheckRun -ReportData $coverageSummaryData -ReportName $coverage_report_name -ReportTitle $coverage_report_title
 
-        Set-ActionOutput -Name coverageSummary -Value $coverageSummaryData
+        # Set-ActionOutput -Name coverageSummary -Value $coverageSummaryData
     }
 elseif ($inputs.skip_check_run -ne $true -and $inputs.publish_only_summary -ne $true )
     {
@@ -217,7 +217,7 @@ elseif ($inputs.skip_check_run -ne $true -and $inputs.publish_only_summary -ne $
 
         Publish-ToCheckRun -ReportData $coverageSummaryData -ReportName $coverage_report_name -ReportTitle $coverage_report_title
 
-        Set-ActionOutput -Name coverageSummary -Value $coverageSummaryData
+        # Set-ActionOutput -Name coverageSummary -Value $coverageSummaryData
 
     }
 elseif ($inputs.skip_check_run -eq $true -and $inputs.publish_only_summary -eq $true )
@@ -229,7 +229,7 @@ elseif ($inputs.skip_check_run -eq $true -and $inputs.publish_only_summary -eq $
 
         $coverageSummary = [System.IO.File]::ReadAllText($script:coverage_summary_path)
 
-        Set-ActionOutput -Name coverageSummary -Value $coverageSummary
+        # Set-ActionOutput -Name coverageSummary -Value $coverageSummary
 
     }
 else {
@@ -240,7 +240,7 @@ else {
 
         $coverageSummary = [System.IO.File]::ReadAllText($script:coverage_summary_path)
 
-        Set-ActionOutput -Name coverageSummary -Value $coverageSummary
+        # Set-ActionOutput -Name coverageSummary -Value $coverageSummary
 
     }
 
@@ -248,6 +248,13 @@ Write-Host "Covered Lines: $coveredLines"
 Write-Host "Missed Lines: $missedLines"
 Write-Host "Total Lines: $totalLines"
 
+
+Set-ActionVariable -Name coveragePercentageString -Value ($coveragePercentageString)
+Set-ActionVariable -Name coveragePercentage -Value ($coveragePercentage)
+Set-ActionVariable -Name coverage_percentage -Value ($coveragePercentage)
+Set-ActionVariable -Name covered_lines -Value ($coveredLines)
+Set-ActionVariable -Name missed_lines -Value ($missedLines)
+Set-ActionVariable -Name total_lines -Value ($coveredLines+$missedLines)
 
 Set-ActionOutput -Name coveragePercentageString -Value ($coveragePercentageString)
 Set-ActionOutput -Name coveragePercentage -Value ($coveragePercentage)
